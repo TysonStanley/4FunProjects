@@ -1,0 +1,36 @@
+# Steph Curry Shot Selection
+# NBAsavant.com (awesome source)
+
+# Libraries
+packs <- c("png","grid","ggplot2")
+lapply(packs, require, character.only=TRUE)
+
+# Data Import
+steph <- read.csv("/Users/user/Dropbox/Research/Basketball/steph.csv")
+summary(steph)
+court <- readPNG("/Users/user/Desktop/court.png")
+g <- rasterGrob(court, interpolate=TRUE)
+
+# Density Shot Chart
+Plot <- ggplot(steph,aes(x=x,y=y,label=shot_made_flag)) +
+  annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) +
+  stat_density2d(aes(colour=..level..,fill=..level..,),alpha=.2, geom="polygon") +
+  scale_x_continuous(expand=c(0.3, 0)) + # removes edge problems with the density plot
+  theme_bw() +
+  xlab("") + ylab("") + 
+  # Remove axes
+  theme(axis.ticks = element_blank(), 
+        axis.text.x = element_blank(), 
+        axis.text.y = element_blank()) + 
+  coord_cartesian(xlim=c(-265,265),
+                  ylim=c(10,450)) # I played around with this knowing that he shoots a lot of 3's
+Plot
+
+# Hexbin Shot Chart - needs work
+Plot2 <- ggplot(steph,aes(x=x,y=y,label=shot_made_flag)) +
+  annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) +
+  stat_binhex(alpha=.75,bin=100) +
+  theme_bw() +
+  coord_cartesian(xlim=c(-275,275),
+                  ylim=c(0,450))
+Plot2
